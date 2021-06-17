@@ -10,12 +10,32 @@ part 1 of the workshop. Its job is to convert strings into data structures that
 the evaluator can understand.
 """
 
-
+# source = "(foo 'bar)"
 def parse(source):
     """Parse string representation of one *single* expression
     into the corresponding Abstract Syntax Tree."""
 
-    raise NotImplementedError("DIY")
+    source = remove_comments(source)
+    source = source.strip()
+
+    if source == '#t':
+        return True
+    if source == '#f':
+        return False
+
+    if source.isdigit():
+        return int(source)
+
+    if source[0] == "'":
+        return ["quote", parse(source[1:])]
+    
+    if source[0] == "(":
+        matching_paren_index = find_matching_paren(source)
+        if matching_paren_index != len(source) - 1:
+            raise DiyLangError('Expected EOF')
+        return parse_multiple(source[1:-1])
+
+    return source        
 
 #
 # Below are a few useful utility functions. These should come in handy when
