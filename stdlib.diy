@@ -6,3 +6,39 @@
 
 ;; DIY -- Implement the rest of your standard library
 ;; here as part 7 of the workshop.
+
+(define or
+    (lambda (a b)
+        (if a #t b)))
+
+(define and
+    (lambda (a b)
+        (if a b #f)))
+
+(define xor
+    (lambda (a b)
+        (if a (not b) b)))
+
+(define >=
+    (lambda (a b)
+        (or (> a b) (eq a b))))
+
+(define <=
+    (lambda (a b)
+        (not (> a b))))
+
+(define < 
+    (lambda (a b)
+        (not (>= a b))))
+
+(define length
+    (lambda (xs)
+        (if (empty xs)
+            0
+            (+ 1 (length (tail xs))))))
+
+(define sum
+    (lambda (xs)
+        (if (empty xs)
+            0
+            (+ (head xs) (sum (tail xs))))))
