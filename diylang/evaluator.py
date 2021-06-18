@@ -16,6 +16,7 @@ in a day, after all.)
 
 def evaluate(ast, env):
     """Evaluate an Abstract Syntax Tree in the specified environment."""
+    print(ast)
     if is_boolean(ast):
         return ast
     if is_integer(ast):
@@ -78,6 +79,29 @@ def evaluate(ast, env):
             right = evaluate(ast[2], env)
             env.set(left, right)
             return
+        if ast[0] == "cons":
+            head = evaluate(ast[1], env)
+            tail = evaluate(ast[2], env)
+            return [head] + tail
+        if ast[0] == "head":
+            list_ = evaluate(ast[1], env)
+            if not is_list(list_):
+                raise DiyLangError("Can't use head on a non list")
+            if len(list_) == 0:
+                raise DiyLangError("Can't use head on empty list")
+            return list_[0]
+        if ast[0] == "tail":
+            list_ = evaluate(ast[1], env)
+            if not is_list(list_):
+                raise DiyLangError("Can't use tail on a non list")
+            if len(list_) == 0:
+                raise DiyLangError("Can't use tail on empty list")
+            return list_[1:]
+        if ast[0] == "empty":
+            list_ = evaluate(ast[1], env)
+            if not is_list(list_):
+                raise DiyLangError("Can't use empty on a non list")
+            return len(list_) == 0
         if ast[0] == "lambda":
             if len(ast[1:]) != 2:
                 raise DiyLangError(f"Wrong number of arguments in {ast[0]}")
