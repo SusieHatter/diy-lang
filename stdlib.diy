@@ -42,3 +42,83 @@
         (if (empty xs)
             0
             (+ (head xs) (sum (tail xs))))))
+
+(define range
+    (lambda (start end)
+        (if (> start end)
+            '()
+            (cons start (range (+ start 1) end)))))
+
+(define append
+    (lambda (list1 list2)
+        (if (empty list1)
+            list2
+            (cons (head list1)(append (tail list1) list2))
+        )
+    )
+)
+
+(define reverse
+    (lambda (list)
+        (if (empty list)
+            '()
+            (append (reverse (tail list)) (cons (head list) '()))
+        )
+    
+    )
+)
+
+(define filter
+    (lambda (pred list)
+        (if (empty list)
+            '()
+            (if (pred (head list))
+                (cons (head list) (filter pred (tail list)))
+                (filter pred (tail list))
+            )
+        )
+    )
+)
+
+(define map
+    (lambda (f list)
+        (if (empty list)
+            '()
+            (cons (f (head list)) (map f (tail list))))))
+
+
+(define reduce
+    (lambda (f ac list)
+        (if (empty list)
+            ac
+            (reduce f (f ac (head list)) (tail list))
+        )
+    )
+)
+
+(define filter_less_than
+    (lambda (n list)
+        (filter (lambda (x) (< x n)) list)
+    )
+)
+
+(define filter_greater_than_equal_to
+    (lambda (n list)
+        (filter (lambda (x) (>= x n)) list)
+    )
+)
+
+(define sort
+    (lambda (list)
+        (if (empty list)
+            '()
+            (append
+                (sort (filter_less_than (head list) (tail list)))
+                (cons
+                    (head list)
+                    (sort (filter_greater_than_equal_to (head list) (tail list)))
+                )
+            )
+        )
+    )
+)

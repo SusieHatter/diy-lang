@@ -16,7 +16,6 @@ in a day, after all.)
 
 def evaluate(ast, env):
     """Evaluate an Abstract Syntax Tree in the specified environment."""
-    print(ast)
     if is_boolean(ast):
         return ast
     if is_integer(ast):
