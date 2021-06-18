@@ -16,7 +16,9 @@ class DiyLangError(Exception):
 class Closure(object):
 
     def __init__(self, env, params, body):
-        raise NotImplementedError("DIY")
+        self.env = env
+        self.params = params
+        self.body = body
 
     def __repr__(self):
         return "<closure/%d>" % len(self.params)
