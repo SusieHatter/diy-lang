@@ -101,6 +101,12 @@ def evaluate(ast, env):
             if not is_list(list_):
                 raise DiyLangError("Can't use empty on a non list")
             return len(list_) == 0
+        if ast[0] == "cond":
+            cases = ast[1]
+            for (condition, value) in cases:
+                if evaluate(condition, env):
+                    return evaluate(value, env)
+            return False
         if ast[0] == "lambda":
             if len(ast[1:]) != 2:
                 raise DiyLangError(f"Wrong number of arguments in {ast[0]}")
