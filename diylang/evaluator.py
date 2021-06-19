@@ -16,6 +16,7 @@ in a day, after all.)
 
 def evaluate(ast, env):
     """Evaluate an Abstract Syntax Tree in the specified environment."""
+    print(ast)
     if is_boolean(ast):
         return ast
     if is_integer(ast):
@@ -123,6 +124,16 @@ def evaluate(ast, env):
                 if evaluate(condition, env):
                     return evaluate(value, env)
             return False
+        if ast[0] == "let":
+            new_env = env
+            for (key, value) in ast[1]:
+                evaluated_value = evaluate(value, new_env)
+                new_env = new_env.extend({
+                    key: evaluated_value
+                })
+            return evaluate(ast[2], new_env)
+        if ast[0] == "defn":
+            return evaluate(["define", ast[1], ["lambda", ast[2], ast[3]]], env)
         if ast[0] == "lambda":
             if len(ast[1:]) != 2:
                 raise DiyLangError(f"Wrong number of arguments in {ast[0]}")

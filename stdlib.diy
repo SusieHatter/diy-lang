@@ -108,16 +108,32 @@
     )
 )
 
-(define sort
-    (lambda (list)
-        (if (empty list)
-            '()
+;(define sort
+;    (lambda (list)
+;        (if (empty list)
+;            '()
+;            (append
+;                (sort (filter_less_than (head list) (tail list)))
+;                (cons
+;                    (head list)
+;                    (sort (filter_greater_than_equal_to (head list) (tail list)))
+;                )
+;            )
+;        )
+;    )
+;)
+
+(defn sort (list)
+    (if (empty list)
+        '()
+        (let
+            (
+                (x (head list))
+                (xs (tail list))
+            )
             (append
-                (sort (filter_less_than (head list) (tail list)))
-                (cons
-                    (head list)
-                    (sort (filter_greater_than_equal_to (head list) (tail list)))
-                )
+                (sort (filter_less_than x xs))
+                (cons x (sort (filter_greater_than_equal_to x xs)))
             )
         )
     )
