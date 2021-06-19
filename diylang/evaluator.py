@@ -20,6 +20,8 @@ def evaluate(ast, env):
         return ast
     if is_integer(ast):
         return ast
+    if is_string(ast):
+        return ast
     if is_symbol(ast):
         return env.lookup(ast)
     if is_list(ast):
@@ -81,26 +83,40 @@ def evaluate(ast, env):
         if ast[0] == "cons":
             head = evaluate(ast[1], env)
             tail = evaluate(ast[2], env)
-            return [head] + tail
+            if is_list(tail):
+                return [head] + tail
+            if is_string(tail):
+                return String(head.val + tail.val)
+            raise DiyLangError("Can't use cons on a non list/string")
         if ast[0] == "head":
             list_ = evaluate(ast[1], env)
-            if not is_list(list_):
-                raise DiyLangError("Can't use head on a non list")
-            if len(list_) == 0:
-                raise DiyLangError("Can't use head on empty list")
-            return list_[0]
+            if is_list(list_):
+                if len(list_) == 0:
+                    raise DiyLangError("Can't use head on empty list")
+                return list_[0]
+            if is_string(list_):
+                if len(list_.val) == 0:
+                    raise DiyLangError("Can't use head on empty string")
+                return String(list_.val[0])
+            raise DiyLangError("Can't use head on a non list/string")
         if ast[0] == "tail":
             list_ = evaluate(ast[1], env)
-            if not is_list(list_):
-                raise DiyLangError("Can't use tail on a non list")
-            if len(list_) == 0:
-                raise DiyLangError("Can't use tail on empty list")
-            return list_[1:]
+            if is_list(list_):
+                if len(list_) == 0:
+                    raise DiyLangError("Can't use tail on empty list")
+                return list_[1:]
+            if is_string(list_):
+                if len(list_.val) == 0:
+                    raise DiyLangError("Can't use tail on empty string")
+                return  String(list_.val[1:])
+            raise DiyLangError("Can't use tail on a non list/string")
         if ast[0] == "empty":
             list_ = evaluate(ast[1], env)
-            if not is_list(list_):
-                raise DiyLangError("Can't use empty on a non list")
-            return len(list_) == 0
+            if is_list(list_):
+                return len(list_) == 0
+            if is_string(list_):
+                return len(list_.val) == 0
+            raise DiyLangError("Can't use empty on a non list/string")
         if ast[0] == "cond":
             cases = ast[1]
             for (condition, value) in cases:

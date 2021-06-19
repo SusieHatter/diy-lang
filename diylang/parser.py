@@ -34,6 +34,12 @@ def parse(source):
         if matching_paren_index != len(source) - 1:
             raise DiyLangError('Expected EOF')
         return parse_multiple(source[1:-1])
+    
+    if source[0] == '"':
+        matching_double_quote_index = find_matching_double_quote(source)
+        if matching_double_quote_index != len(source) - 1:
+            raise DiyLangError('Expected EOF')
+        return String(source[1:-1])
 
     return source        
 
@@ -48,11 +54,18 @@ def remove_comments(source):
     """Remove from a string anything in between a ; and a line break"""
     return re.sub(r";.*\n", "\n", source)
 
+def find_matching_double_quote(source, start=0):
+    """Given a string and the index of a double quote, determines
+    the idnex of the matching double quote."""
+    assert source[start] == '"'
+    for pos in range(start + 1, len(source)):
+        if source[pos] == '"' and source[pos - 1] != "\\":
+            return pos
+    raise DiyLangError(f'Unclosed string: {source}')
 
 def find_matching_paren(source, start=0):
     """Given a string and the index of an opening parenthesis, determines
     the index of the matching closing paren."""
-
     assert source[start] == '('
     pos = start
     open_brackets = 1
@@ -60,6 +73,9 @@ def find_matching_paren(source, start=0):
         pos += 1
         if len(source) == pos:
             raise DiyLangError("Incomplete expression: %s" % source[start:])
+        if source[pos] == '"':
+            pos = find_matching_double_quote(source, start=pos)
+            continue
         if source[pos] == '(':
             open_brackets += 1
         if source[pos] == ')':
@@ -95,6 +111,9 @@ def first_expression(source):
     if source[0] == "'":
         exp, rest = first_expression(source[1:])
         return source[0] + exp, rest
+    if source[0] == '"':
+        last = find_matching_double_quote(source)
+        return source[:last + 1], source[last + 1:]
     elif source[0] == "(":
         last = find_matching_paren(source)
         return source[:last + 1], source[last + 1:]
